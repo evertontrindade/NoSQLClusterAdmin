@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+
+<div th:fragment="executionmodal">
+
+    <div class="modal fade execution" tabindex="-1" role="dialog" th:id="${'executionmodal_' + cluster.id}" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" style="width: 80% !important;">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 th:text="${cluster.nameFormatted}" class="modal-title"></h3>
+                    <h4 th:text="#{executionmodalcluster.title}" class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding: 10px;">
+                        <div class="col-sm-6 text-center" style="padding: 15px;" th:if="${cluster.containsExecStart()}">
+                            <a href="#" th:href="${'/cluster/execute/' + cluster.id + '/START'}" class="btn btn-default mod" role="button" th:title="#{executionmodal.start.cluster}">
+                                <div class="thumbnail" style="width: 150px;">
+                                    <i class="fa fa-play-circle-o fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="caption">
+                                    <label th:utext="#{executionmodalcluster.start.cluster}">start</label>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6 text-center" style="padding: 15px;" th:if="${cluster.containsExecRestart()}">
+                            <a href="#" th:href="${'/cluster/execute/' + cluster.id + '/RESTART'}" class="btn btn-default mod" role="button" th:title="#{executionmodal.restart.cluster}">
+                                <div class="thumbnail" style="width: 150px;">
+                                    <i class="fa fa-refresh fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="caption">
+                                    <label th:utext="#{executionmodalcluster.restart.cluster}">restart</label>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6 text-center" style="padding: 15px;" th:if="${cluster.containsExecStop()}">
+                            <a href="#" th:href="${'/cluster/execute/' + cluster.id + '/STOP'}" class="btn btn-default mod" role="button" th:title="#{executionmodal.stop.cluster}">
+                                <div class="thumbnail" style="width: 150px;">
+                                    <i class="fa fa-stop-circle-o fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="caption">
+                                    <label th:utext="#{executionmodalcluster.stop.cluster}">stop</label>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6 text-center" style="padding: 15px;" th:if="${cluster.containsExecCustom() and cluster.executeCustom}">
+                            <a href="#" th:href="${'/cluster/execute/' + cluster.id + '/CUSTOM'}" class="btn btn-default mod" role="button" th:title="#{executionmodal.execute.custom.cluster}">
+                                <div class="thumbnail" style="width: 150px;">
+                                    <i class="fa fa-paper-plane fa-4x" aria-hidden="true"></i>
+                                </div>
+                                <div class="caption">
+                                    <label th:utext="#{executionmodalcluster.execute.custom.cluster}">custom</label>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row" style="padding: 30px;">
+                        <div class="col-sm-12" style="padding: 5px;border-style: solid;border: 1px; background-color: lightgray; height: 250px !important;overflow: scroll;overflow-x: hidden;" align="left">
+                            <p id="execution"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{button.close}">close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+</body>
+</html>

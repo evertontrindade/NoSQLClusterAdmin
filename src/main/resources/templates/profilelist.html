@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="#{grouplist.title}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{grouplist.subtitle}"> </h3>
+    <div>
+
+        <div class="alert alert-warning alert-dismissible" role="alert" id="hasUsers">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong><span th:text="#{message.warn}"></span>!</strong> <span th:text="#{grouplist.error}"></span> 
+        </div>
+
+        <div class="jumbotron text-center" th:if="${#lists.isEmpty(profiles) and @currentUserService.canAccessUser(currentUser, 'INSERT_PROFILE')}">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="thumbnail">
+                        <a th:href="${'/profile/new'}" class="btn btn-default" role="button">
+                            <i class="fa fa-plus-square fa-5x" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(profiles)}">
+
+			<a class="btn btn-default" href="#" th:href="${'/profile/new'}" style="margin-bottom:10px;" 
+				role="button" th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_PROFILE')}"> <span class="fa fa-user-plus"></span>&nbsp; <span th:text="#{grouplist.new}"></span> </a>
+
+            <table class="table table-hover">
+                <tr>
+                    <th th:text="#{grouplist.name}"></th>
+                    <th th:text="#{grouplist.action}"></th>
+                </tr>
+                <tr th:each="profile : ${profiles}" >
+                    <td th:text="${profile.name}"></td>
+                    <td>
+                        <a href="#" th:href="${'/profile/edit/' + profile.id}" class="btn btn-default" role="button" th:if="${@currentUserService.canAccessUser(currentUser, 'UPDATE_PROFILE') and profile.name != 'MASTER'}">
+                            <i class="fa fa-pencil-square" aria-hidden="true" th:title="#{grouplist.edit}"></i>
+                        </a>
+                        <a href="#" th:attr="data-id=${profile.id}" class="btn btn-danger btn-delete" role="button" th:if="${@currentUserService.canAccessUser(currentUser, 'DELETE_PROFILE')  and profile.name != 'MASTER'}">
+                            <i class="fa fa-trash" aria-hidden="true" th:title="#{grouplist.delete}"></i>
+                        </a>
+	                    <div class="modal fade askModal" tabindex="-1" role="dialog" th:id="${'modal_' + profile.id}">
+	                        <div class="modal-dialog">
+	                            <div class="modal-content">
+	                                <div class="modal-header">
+	                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		                                <h2 class="modal-title" th:text="#{message.warn}" style="font-weight: bolder;"></h2>
+	                                </div>
+	                                <div class="modal-body">
+		                                <p th:text="#{message.confirm}" style="font-weight: bolder;"></p>
+	                                </div>
+	                                <div class="modal-footer">
+		                                <a href="#" class="btn btn-default" role="button" data-dismiss="modal" th:text="#{message.no}"></a>
+	                                    <a href="#" th:href="${'/profile/delete/' + profile.id}" class="btn btn-primary" role="button" th:text="#{message.yes}"></a>
+	                                </div>
+	                            </div><!-- /.modal-content -->
+	                        </div><!-- /.modal-dialog -->
+	                    </div><!-- /.modal -->
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script>
+    $(document).ready(function() {
+        $("#hasUsers").hide();
+    });
+
+    var id = -1;
+    $(".btn-delete").click(function() {
+        id = $(this).data('id');
+
+        console.log("validateusers: " + id);
+
+        url = '/profile/validate-users/' + id;
+        $.ajax(url).done(function(data) {
+            if (data == true) {
+                $('#hasUsers').show();
+            } else {
+                $('#hasUsers').hide();
+                console.log('#modal_' + id);
+                $('#modal_' + id).modal();
+            }
+            id = -1;
+        });
+    });
+</script>
+</body>
+</html>

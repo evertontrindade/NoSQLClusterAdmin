@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+
+<div th:fragment="monitor">
+
+    <div class="modal fade monitormachine" tabindex="-1" role="dialog"
+         th:id="${'monitormachine_' + cluster.id}" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" style="width: 98% !important;" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 th:text="${cluster.nameFormatted}" class="text-center modal-title"></h3>
+                    <h4 th:text="#{clustermonitormachine.title}" class="text-center modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading" th:text="#{clustermonitormachine.cpu}"></div>
+                                <div class="panel-body">
+                                    <div th:id="${'cpu-node_'+ cluster.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading" th:text="#{clustermonitormachine.memory}"></div>
+                                <div class="panel-body">
+                                    <div th:id="${'memory-node_'+ cluster.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading" th:text="#{clustermonitormachine.disk}"></div>
+                                <div class="panel-body">
+                                    <div th:id="${'disk-node_'+ cluster.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{button.close}"></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</div>
+
+</body>
+</html>

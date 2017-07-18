@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+
+<div th:fragment="monitor">
+
+    <div class="modal fade monitortotals" tabindex="-1" role="dialog"
+         th:id="${'monitortotals_' + cluster.id}" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" style="width: 98% !important;" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 th:text="${cluster.nameFormatted}" class="text-center modal-title"></h3>
+                    <h4 th:text="#{clustermonitortotals.title}" class="text-center modal-title"></h4>
+                    <h6 class="text-center modal-title" th:text="#{clustermonitortotals.subtitle}"></h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="panel panel-info" style="height: 220px;">
+                                <div class="panel-heading" th:text="#{clustermonitortotals.node.status}"></div>
+                                <div class="panel-body" th:id="${'light-node_'+ cluster.id}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-info" style="height: 220px;">
+                                <div class="panel-heading" th:text="#{clustermonitortotals.totals.title}"></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.disk.available}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'total-disk-available_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.disk.used}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'total-disk-usage_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.read}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'total-in_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.write}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'total-out_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.read.avg}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'media-in_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.write.avg}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'media-out_'+ cluster.id}"></div>
+                                        <div class="col-md-8 text-left" th:text="#{clustermonitortotals.cpu.avg}"></div>
+                                        <div class="col-md-4 text-left" th:id="${'media-cpu_'+ cluster.id}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{button.close}"></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</div>
+
+</body>
+</html>

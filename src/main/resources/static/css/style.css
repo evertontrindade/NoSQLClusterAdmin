@@ -1,0 +1,49 @@
+.tooltip-inner {
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+.place {
+	display: block;
+	border: 1px dashed #c5c5c5;
+	border-left-radius: 4px;
+	border-right-radius: 4px;
+	padding: 20px 15px;
+}
+
+.flags {
+    background: url("../img/flags.png") no-repeat;
+	width: 30px;
+	height: 23px;
+    display: inline-block;
+}
+
+.usa {
+	background-position: -326px -439px; 
+}
+
+.brl {
+	background-position: -218px -475px; 
+}
+
+
+ 
+/* Sticky footer styles
+-------------------------------------------------- */
+.footer {
+	margin: 40px;
+}
+.footer .navbar-fixed-bottom {
+	padding: 10px;
+}
+
+/* /* Custom page CSS */
+/* -------------------------------------------------- */ */
+/* /* Not required for template or sticky footer method. */ */
+
+/* .footer .container { */
+/*   width: auto; */
+/*   max-width: 680px; */
+/*   padding: 0 15px; */
+/*   margin: 20px 0; */
+/* } */

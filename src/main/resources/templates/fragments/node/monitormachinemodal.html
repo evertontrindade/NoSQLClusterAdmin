@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+
+<div th:fragment="monitor">
+
+    <div class="modal fade monitormachine" tabindex="-1" role="dialog"
+         th:id="${'monitormachine_' + node.id}" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" style="width: 98% !important;" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 th:text="${node.nameFormatted}" class="text-center modal-title"></h3>
+                    <h4 th:text="${'MÉTRICAS GERAIS DA MÁQUINA'}" class="text-center modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">Consumo de CPU</div>
+                                <div class="panel-body">
+                                    <div th:id="${'cpu-node_'+ node.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">Utilização de Memória</div>
+                                <div class="panel-body">
+                                    <div th:id="${'memory-node_'+ node.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">Espaço em Disco</div>
+                                <div class="panel-body">
+                                    <div th:id="${'disk-node_'+ node.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</div>
+
+</body>
+</html>

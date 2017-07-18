@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+	<meta http-equiv="pragma" content="no-cache" />
+</head>
+<body>
+
+<div class="container container-login">
+
+    <div class="text-center" style="margin-top: 5%;">
+        <a href="#" th:href="@{/}" >
+    	<img src="/img/banner.png" />
+        </a>
+    </div>
+
+    <div class="jumbotron">
+        <form class="form-horizontal" th:action="@{/login}" method="post" role="form" >
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+            <div th:if="${error.isPresent()}" class="alert alert-warning col-sm-offset-3 col-sm-7 " role="alert" th:text="#{login.error}">error</div>
+
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-3 control-label text-right" for="email" th:text="#{login.username}">username</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="email" id="email" required="true" autofocus="true" autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-3 control-label text-right" for="password" th:text="#{login.passwd}">passwd</label>
+                <div class="col-sm-4">
+                    <input type="password" class="form-control" name="password" id="password" />
+                </div>
+            </div>
+
+            <div class="row text-center">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}">Ok</button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+</body>
+</html>

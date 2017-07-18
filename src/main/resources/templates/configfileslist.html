@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${node.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{conffilelist.title}"> </h3>
+
+    <div>
+        <h4 th:if="${#lists.isEmpty(node.confFiles)}" class="text-center" th:text="#{conffilelist.nodata}"></h4>
+
+        <div class="alert alert-success alert-dismissible" role="alert" th:if="${saveok eq true and backupok eq true }">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <label class="text-center" th:text="#{conffilelist.successupdbkp}"></label>
+        </div>
+
+        <div class="alert alert-success alert-dismissible" role="alert" th:if="${saveok eq true and backupok eq false }">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <label class="text-center" th:text="#{conffilelist.successupdate}"></label>
+        </div>
+
+        <div class="alert alert-success alert-dismissible" role="alert" th:if="${saveok eq false and backupok eq true }">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <label class="text-center" th:text="#{conffilelist.successbackup}"></label>
+        </div>
+
+        <table class="table table-hover" th:if="${not #lists.isEmpty(node.confFiles)}">
+            <tr>
+                <th th:text="#{conffilelist.path}"></th>
+                <th th:text="#{conffilelist.action}"></th>
+            </tr>
+
+            <tr th:each="file : ${node.confFiles}"
+                th:style="${file.status.name() eq 'OK'}? 'background-color: lightgreen':''" >
+                <td th:if="${ #strings.length(file.path) gt 100}" th:utext="${ #strings.substring(file.path, 0, 97) + '...'}" th:title="${file.path}"></td>
+                <td th:if="${ #strings.length(file.path) le 100}" th:utext="${file.path}"></td>
+                <td>
+                    <a href="#"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'UPDATE_CONFFILE') }"
+                       th:href="${'/confFile/edit/' + file.id}" class="btn btn-default" role="button"><i class="fa fa-pencil-square" aria-hidden="true" th:title="#{conffilelist.edit}"></i></a>
+                    <a href="#"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'CONFIGURE_CONFFILE') }"
+                       th:href="${'/confFile/configure/' + file.id}" class="btn btn-default" role="button"><i class="fa fa-cog" aria-hidden="true" th:title="#{conffilelist.changecontent}"></i></a>
+                    <a href="#"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'DELETE_CONFFILE') }"
+                       data-toggle="modal" th:attr="data-target='#modal_'+${file.id}" class="btn btn-default" role="button"><i class="fa fa-trash" aria-hidden="true" th:title="#{conffilelist.delete(${file.path}, ${#strings.toUpperCase(file.node.name)}) }"></i></a>
+                </td>
+                <div class="modal fade askModal" tabindex="-1" role="dialog" th:id="${'modal_' + file.id}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title" th:text="#{message.warn}" style="font-weight: bolder;"></h2>
+                            </div>
+                            <div class="modal-body">
+                                <p th:text="#{conffilelist.delete.message}"></p>
+                                <p th:text="#{message.confirm}" style="font-weight: bolder;"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-default" role="button" data-dismiss="modal" th:text="#{message.no}"></a>
+                                <a href="#" th:href="${'/confFile/delete/' + file.id}" class="btn btn-primary" role="button" th:text="#{message.yes}"></a>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+            </tr>
+        </table>
+        <div class="row">
+            <a href="#"
+               th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_CONFFILE') }"
+               th:href="${'/confFile/new/' + node.id}" class="btn btn-primary" role="button"><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp; <span th:text="#{conffilelist.new}"></span> </a>
+            <a href="#" th:href="${'/nodes/' + node.cluster.id}" class="btn btn-primary" role="button"><i class="fa fa-th-list" aria-hidden="true"></i>&nbsp; <span th:text="#{button.back}"></span></a>
+        </div>
+
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+</body>
+</html>

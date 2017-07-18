@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${confFile.node.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{editconffileform.path.title}" th:if="${#strings.isEmpty(confFile.contentFile)}"> </h3>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{editconffileform.content.title}" th:if="${not #strings.isEmpty(confFile.contentFile)}"> </h3>
+    <div>
+        <form class="form-horizontal" th:object="${confFile}" th:action="@{/confFile/edit}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{node}" />
+            <input type="hidden" th:field="*{status}" />
+            <input type="hidden" th:field="*{path}" th:if="${not #strings.isEmpty(confFile.contentFile)}"/>
+
+            <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error eq true}">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="text-center"> <span th:text="#{message.warn}" style="font-weight: bolder;"></span> <span th:text="#{editconffileform.content.error}"></span></h4>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{editconffileform.path}"></label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" th:field="*{path}" th:disabled="${not #strings.isEmpty(confFile.contentFile)}" th:required="${#strings.isEmpty(confFile.contentFile)}"/>
+                </div>
+            </div>
+            <div class="form-group" th:if="${confFile.contentFile != null}">
+                <div class="col-sm-12">
+                    <textarea rows="15" class="form-control" style="font-family: 'Courier New';" th:field="*{contentFile}" />
+                </div>
+            </div>
+            <div class="row text-center">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+                <a href="#" th:href="${'/confFiles/'+confFile.node.id}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+</body>
+</html>

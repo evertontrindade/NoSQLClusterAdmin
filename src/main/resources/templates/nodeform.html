@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${node.cluster.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{nodeform.title}"> </h3>
+
+    <div>
+        <form class="form-horizontal" th:object="${node}" th:action="@{/node}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{cluster}" />
+
+            <div id="alert"></div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{nodeform.name}"></label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" th:field="*{name}" required="true" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{nodeform.type}"></label>
+                <div class="col-sm-2">
+                    <select id="type" class="form-control" th:field="*{type}" required="true">
+                        <option value="REMOTO" th:text="#{nodeform.type.remote}"></option>
+                        <option value="LOCAL" th:text="#{nodeform.type.local}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-2 control-label" th:text="#{nodeform.order}"></label>
+                <div class="col-sm-1" data-toggle="tooltip" data-placement="bottom" th:title="#{nodeform.order.message}">
+                    <input type="text" class="form-control" th:field="*{executionOrder}" required="" />
+                </div>
+                <div class="checkbox col-sm-4">
+                    <label class="control-label" data-toggle="tooltip" data-placement="bottom" th:title="#{nodeform.sudo.message}">
+                        <input type="checkbox" id="needSudo" th:field="*{needSudo}" th:text="#{nodeform.sudo}"  checked="true" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{nodeform.user}"></label>
+                <div class="col-sm-2">
+                    <input id="remoteUser" type="text" class="form-control" th:field="*{remoteUser}" data-toggle="tooltip" data-placement="bottom" th:title="#{nodeform.user.message}"  required="" />
+                </div>
+
+                <label class="col-sm-1 control-label" th:text="#{nodeform.passwd}"></label>
+                <div class="col-sm-2">
+                    <input id="remotePasswd" type="password" class="form-control" th:field="*{remotePasswd}" required="" />
+                </div>
+                <label class="col-sm-1 control-label" th:text="#{nodeform.connection}"></label>
+                <div class="col-sm-2">
+                    <select id="connectionType" class="form-control" th:field="*{connectionType}">
+                        <option value="SSH" th:text="#{nodeform.connection.ssh}"></option>
+                        <option value="TELNET" th:text="#{nodeform.connection.telnet}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{nodeform.host}"></label>
+                <div class="col-sm-3">
+                    <input id="host" type="text" class="form-control" th:field="*{host}" />
+                </div>
+                <div class="col-sm-2" data-toggle="tooltip" data-placement="bottom" th:title="#{nodeform.verify.message}">
+                    <a href="#" id="host-btn" class="btn btn-default" role="button" th:text="#{nodeform.verify}"></a>
+                </div>
+                <label class="col-sm-1 control-label" th:text="#{nodeform.port}"></label>
+                <div class="col-sm-2">
+                    <input id="port" type="text" class="form-control" th:field="*{port}" />
+                </div>
+            </div>
+
+            <div class="row text-center">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+                <a href="#" th:href="${'/nodes/'+node.cluster.id}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script>
+    $("#type").change(function() {
+        console.log($(this).val());
+        if($(this).val() == "LOCAL"){
+            $("#connectionType").attr("disabled", "");
+            $("#host").attr("disabled", "");
+            $("#port").attr("disabled", "");
+
+            $("#host").val("");
+            $("#port").val("");
+
+        } else {
+            $("#connectionType").removeAttr("disabled", "");
+            $("#host").removeAttr("disabled", "");
+            $("#port").removeAttr("disabled", "");
+            if($("#connectionType").val() == "SSH"){
+                $("#port").val("22");
+            } else {
+                $("#port").val("23");
+            }
+        }
+    });
+    $("#connectionType").change(function() {
+        console.log($(this).val());
+        if($(this).val() == "SSH"){
+            $("#port").val("22");
+        } else {
+            $("#port").val("23");
+        }
+    });
+
+    $( document ).ready(function() {
+        console.log($(this).val());
+        if($("#connectionType").val() == "SSH"){
+            $("#port").val("22");
+        } else {
+            $("#port").val("23");
+        }
+
+        $('#remoteUser').focus(function() {
+            $('#remoteUser').tooltip();
+        });
+        $('#remoteUser').tooltip();
+        $("#name").focus();
+
+        $('#host-btn').click(function() {
+            console.log("validateip");
+
+            if ($('#host').val() != '') {
+                url = '/node/validatenewip/' + $('#host').val().replace(/\./g,'_');
+                console.log(url);
+                $("#alert").load(url);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+</script>
+
+</body>
+</html>

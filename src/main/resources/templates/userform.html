@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <meta http-equiv="pragma" content="no-cache" />
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <form class="form-horizontal" th:object="${user}" th:action="@{/user}" method="post">
+        <input type="hidden" id="id" th:field="*{id}" />
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+        <h2 class="text-center" th:text="#{userform.title}"> </h2>
+        <h3 th:if="${type eq 'NEW'}" class="text-center" style="padding-bottom: 30px;" th:text="#{userform.new.title}"> </h3>
+        <h3 th:if="${type eq 'EDIT'}" class="text-center" style="padding-bottom: 30px;" th:text="#{userform.edit.title}"> </h3>
+        <h3 th:if="${type eq 'PROFILE'}" class="text-center" style="padding-bottom: 30px;" th:text="#{userform.profile.title( ${#strings.toUpperCase(user.name)}) }"> </h3>
+
+		<div class="alert alert-warning alert-dismissible" role="alert" id="diffPass">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong><span th:text="#{message.warn}"></span>!</strong> <span th:text="#{userform.passwd.error}"></span>
+		</div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" th:text="#{userform.name}"></label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" th:field="*{name}" disabled="true" th:if="${user.name == 'admin'}" />
+                <input type="text" class="form-control" th:field="*{name}" required="true" autocomplete="off" th:if="${user.name != 'admin'}" />
+            </div>
+        </div>
+         <div class="form-group">
+             <label class="col-sm-3 control-label" th:text="#{userform.email}"></label>
+             <div class="col-sm-9">
+                 <input type="email" class="form-control" th:field="*{email}" required="true" autocomplete="off"/>
+             </div>
+         </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" th:text="#{userform.passwd}"></label>
+            <div class="col-sm-3">
+                <input th:if="${user.id != null and user.id != 0}"  type="password" class="form-control" th:field="*{passwordHash}" id="passwordHash" />
+                <input th:if="${user.id == null or user.id == 0}"  type="password" class="form-control" th:field="*{passwordHash}" id="passwordHash" required="true" />
+            </div>
+            <label class="col-sm-3 control-label" th:text="#{userform.confpasswd}"></label>
+            <div class="col-sm-3">
+                <input th:if="${user.id != null and user.id != 0}"  type="password" class="form-control" th:field="*{passwordRepeated}" id="passwordRepeated" />
+                <input th:if="${user.id == null or user.id == 0}"  type="password" class="form-control" th:field="*{passwordRepeated}" id="passwordRepeated" required="true" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" th:text="#{userform.group}"></label>
+            <div class="col-sm-3">
+
+                <select th:field="*{profile}" 
+	                	th:disabled="${user.name == 'admin' or not @currentUserService.canAccessUser(currentUser, 'INSERT_USER', 'UPDATE_USER')}" 
+	                	class="form-control" required="true" >
+                    <option th:value="${prof.id}" th:text="${prof.name}" th:each="prof : ${profiles}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row text-center" style="margin-bottom: 30px;">
+            <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+            <a href="#" th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_USER', 'LIST_USER') }" th:href="@{/users}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+            <a href="#" th:if="${ not @currentUserService.canAccessUser(currentUser, 'INSERT_USER', 'LIST_USER') }" th:href="@{/}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+        </div>
+    </form>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script>
+
+$(document).ready(function() {
+	$("#diffPass").hide();		
+});
+
+$(document).on('click', 'form button[type=submit]', function(e) {
+	if ($('#passwordHash')) {
+		var isValid = $('#passwordHash').val() == $('#passwordRepeated').val();
+	    if(!isValid) {
+	    	$("#diffPass").show();
+	    	e.preventDefault(); //prevent the default action
+	    } else {
+	    	$("#diffPass").hide();
+	    }
+	}
+});
+</script>
+
+</body>
+</html>

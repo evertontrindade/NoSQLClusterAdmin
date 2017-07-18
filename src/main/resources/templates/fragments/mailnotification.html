@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+<div th:fragment="error">
+    <div class="alert alert-warning" role="alert">
+        <h4 class="text-center">
+            <b><span th:text="#{message.warn}"></span>:</b> <span th:text="#{mail.notification.error}"></span>
+        </h4>
+    </div>
+</div>
+
+<div th:fragment="sent">
+    <div class="alert alert-success" role="alert">
+        <h4 class="text-center" th:utext="#{mail.notification.success}"></h4>
+    </div>
+
+</div>
+
+</body>
+</html>

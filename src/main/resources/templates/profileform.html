@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <link th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" rel="stylesheet" />
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <form class="form-horizontal" th:object="${profile}" th:action="@{/profile}" method="post" id="form">
+        <input type="hidden" id="id" th:field="*{id}" />
+        <input type="hidden" id="roles" th:field="*{rolesAdded}"/>
+        
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+	    <h2 class="text-center" th:text="#{groupform.title}"> </h2>
+	    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{groupform.new.subtitle}" th:if="${profile.id == null}"> </h3>
+	    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{groupform.edit.subtitle}" th:if="${profile.id != null}"> </h3>
+
+		<div class="alert alert-warning alert-dismissible" role="alert" id="noRoles">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong><span th:text="#{message.warn}"></span>!</strong> <span th:text="#{groupform.error}"></span>
+		</div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" th:text="#{groupform.name}"></label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" th:field="*{name}" required="true" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+            	<div class="col-sm-6">
+					<div class="panel panel-primary" data-toggle="tooltip" data-placement="top" th:title="#{groupform.rolesavailable.message}">
+						<div class="panel-heading" th:text="#{groupform.roles.available}"></div>
+						<div class="panel-body">
+							<ul class="list-group" id="roles-available" style="height:300px;overflow-y:scroll;width:100%;">
+							  <li th:id="${item.id}" th:text="#{${item.description}}" class="list-group-item" th:each="item : ${rolesAvailable}"></li>
+							</ul>
+						</div>
+					</div>
+	           	</div>
+            	<div class="col-sm-6">
+					<div class="panel panel-primary" data-toggle="tooltip" data-placement="top" th:title="#{groupform.rolesadded.message}">
+						<div class="panel-heading" th:text="#{groupform.roles.added}"></div>
+						<div class="panel-body">
+							<ul class="list-group" id="roles-added" style="height:300px;overflow-y:scroll;width:100%;">
+							  <li th:id="${item.id}" th:text="#{${item.description}}" class="list-group-item" th:each="item : ${profile.roles}"></li>
+							</ul>
+						</div>
+					</div>
+            	</div>
+            </div>
+
+        </div>
+
+        <div class="row text-center" style="margin-bottom: 30px;">
+            <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+            <a href="#" th:href="@{/profiles}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+        </div>
+    </form>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script>
+
+	$(document).ready(function() {
+		$("#noRoles").hide();
+
+		$('#form').submit(function() {
+			var values = $('#roles').val();
+
+			if (values.trim() == '') {
+				$("#noRoles").show();
+				return false;
+			}
+
+		});
+
+	});	
+
+	$(function() {
+		$("#roles-available").sortable({
+			cursor: "move",
+			connectWith : ".list-group",
+			placeholder: "place",
+			start: function (event, ui) {
+                ui.item.toggleClass("highlight");
+	        },
+	        stop: function (event, ui) {
+                ui.item.toggleClass("highlight");
+	        }
+	    });
+		$("#roles-added").sortable({
+			cursor: "move",
+			connectWith : ".list-group",
+			placeholder: "place",
+			start: function (event, ui) {
+                ui.item.toggleClass("highlight");
+	        },
+	        stop: function (event, ui) {
+                ui.item.toggleClass("highlight");
+	        },
+	        receive: function(event, ui) {
+	        	var str = $("#roles").val();
+	        	var arr = [];
+	        	if (str) {
+		        	arr = str.split(',');
+	        	} 
+	        	arr.push(ui.item.attr("id"));
+	        	$("#roles").val(arr);
+	        	console.log($("#roles").val());
+	        },
+	        remove: function(event, ui) {
+	        	var str = $("#roles").val();
+	        	var arr = [];
+	        	if (str) {
+		        	arr = str.split(',');
+	        	} 
+	        	arr = $.grep(arr, function(item) {
+	        		return item != ui.item.attr("id");
+	        	});
+
+	        	$("#roles").val(arr);
+	        	console.log($("#roles").val());
+	        }
+	    });
+		$( "#roles-available, #roles-added" ).disableSelection();
+
+        $('[data-toggle="tooltip"]').tooltip()
+
+	});
+</script>
+
+</body>
+</html>

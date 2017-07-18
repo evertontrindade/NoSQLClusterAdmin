@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${confFile.node.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{conffileform.title}"> </h3>
+    <div>
+        <form class="form-horizontal" th:object="${confFile}" th:action="@{/confFile}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{node}" />
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{conffileform.path}"></label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" th:field="*{path}" required="true" />
+                </div>
+            </div>
+            <div class="row text-center">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+                <a href="#" th:href="${'/confFiles/'+confFile.node.id}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+</body>
+</html>

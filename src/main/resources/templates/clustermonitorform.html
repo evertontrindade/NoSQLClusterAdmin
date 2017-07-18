@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+
+<div class="container">
+
+    <div>
+        <form class="form-horizontal" th:object="${cluster}" th:action="@{'/cluster/monitoring/'}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <h2 class="text-center" th:text="${cluster.nameFormatted}"> </h2>
+            <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{clustermonitorform.title}"> </h3>
+
+            <div class="panel panel-primary col-sm-offset-2">
+                <div class="panel-heading" th:text="#{clustermonitorform.monitorconf}"></div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" th:text="#{clustermonitorform.updatetime}"></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" th:field="*{collectTime}" id="collectTime">
+                                <option value="1">1</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="35">35</option>
+                                <option value="40">40</option>
+                                <option value="45">45</option>
+                                <option value="50">50</option>
+                                <option value="55">55</option>
+                                <option value="60">60</option>
+                            </select>
+                        </div>
+                        <label class="col-sm-4 control-label" th:text="#{clustermonitorform.savetime}"></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" th:field="*{saveTime}" id="saveTime" >
+                                <option value="12" th:text="#{clustermonitorform.middleday}"></option>
+                                <option value="24">1</option>
+                                <option value="48">2</option>
+                                <option value="72">3</option>
+                                <option value="96">4</option>
+                                <option value="120">5</option>
+                                <option value="144">6</option>
+                                <option value="168">7</option>
+                                <option value="192">8</option>
+                                <option value="216">9</option>
+                                <option value="240">10</option>
+                                <option value="264">11</option>
+                                <option value="288">12</option>
+                                <option value="312">13</option>
+                                <option value="336">14</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <div class="panel panel-info">
+                            <div class="panel-heading" th:text="#{clustermonitorform.machine.title}"></div>
+                            <div class="panel-body">
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.cpu}"></label>
+                                <div class="col-sm-12">
+                                   <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                             th:placeholder="#{clustermonitorform.cpu.message}"
+                                             th:field="*{usageCPU}" id="usageCPU" 
+                                             th:attr="data-title=#{clustermonitorform.cpu.tooltip}"
+                                             >
+                                   </textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.memory.available}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.memory.available.message}"
+                                              th:field="*{memoryAvailable}" id="memoryAvailable" 
+                                              th:attr="data-title=#{clustermonitorform.memory.available.tooltip}"
+                                              >
+                                    </textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.memory.used}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.memory.used.message}"
+                                              th:field="*{memoryUsage}" id="memoryUsage"
+                                              th:attr="data-title=#{clustermonitorform.memory.used.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.disk.available}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.disk.available.message}"
+                                              th:field="*{diskSpaceAvailable}" id="diskSpaceAvailable"
+                                              th:attr="data-title=#{clustermonitorform.disk.available.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.disk.used}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.disk.used.message}"
+                                              th:field="*{diskSpaceUsage}" id="diskSpaceUsage"
+                                              th:attr="data-title=#{clustermonitorform.disk.used.tooltip}"
+                                              ></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-info">
+                            <div class="panel-heading" th:text="#{clustermonitorform.database.title}"></div>
+                            <div class="panel-body">
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.activity}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.activity.message}"
+                                              th:field="*{lightIndicator}" id="lightIndicator"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.cpu}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.cpu.message}"
+                                              th:field="*{usageCPUProcess}" id="usageCPUProcess"
+                                              th:attr="data-title=#{clustermonitorform.cpuproc.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.memory.available}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.memory.available.message}"
+                                              th:field="*{memoryAvailableProcess}" id="memoryAvailableProcess"
+                                              th:attr="data-title=#{clustermonitorform.memoryproc.available.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.memory.used}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.memory.used.message}"
+                                              th:field="*{memoryUsageProcess}" id="memoryUsageProcess"
+                                              th:attr="data-title=#{clustermonitorform.memoryproc.used.tooltip}"
+                                              ></textarea>
+                                </div>
+
+		                        <label class="col-sm-12 control-label" th:text="#{clustermonitorform.io.type}"></label>
+		                        <div class="col-sm-4 col-sm-offset-8">
+		                            <select class="form-control" th:field="*{dataIoType}" >
+		                                <option value="KBPS" th:text="#{clustermonitorform.io.type.kbps}"></option>
+		                                <option value="RPS" th:text="#{clustermonitorform.io.type.rps}"></option>
+		                            </select>
+		                        </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.io.in}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.io.in.message}"
+                                              th:field="*{dataInputStream}" id="dataInputStream"
+                                              th:attr="data-title=#{clustermonitorform.io.in.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                                <label class="col-sm-12 control-label" th:text="#{clustermonitorform.io.out}"></label>
+                                <div class="col-sm-12">
+                                    <textarea rows="5" class="form-control" style="font-family: 'Courier New';"
+                                              th:placeholder="#{clustermonitorform.io.out.message}"
+                                              th:field="*{dataOutputStream}" id="dataOutputStream"
+                                              th:attr="data-title=#{clustermonitorform.io.out.tooltip}"
+                                              ></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row text-center" style="margin-bottom: 30px;">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}">confirm</button>
+                <a href="#" th:href="@{/clusters}" class="btn btn-default" role="button"  th:text="#{button.cancel}">cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+<script>
+
+    $(function () {
+
+        $("#usageCPU").tooltip({placement: 'left',
+            title: $("#usageCPU").data("title")
+            , html: true});
+
+		$("#memoryAvailable").tooltip({placement: 'left',
+            title: $("#memoryAvailable").data("title")
+            , html: true});
+
+        $("#memoryUsage").tooltip({placement: 'left',
+            title: $("#memoryUsage").data("title")
+            , html: true});
+
+        $("#diskSpaceAvailable").tooltip({placement: 'left',
+            title: $("#diskSpaceAvailable").data("title")
+            , html: true});
+
+        $("#diskSpaceUsage").tooltip({placement: 'left',
+            title: $("#diskSpaceUsage").data("title")
+            , html: true});
+
+
+        $("#usageCPUProcess").tooltip({placement: 'left',
+            title: $("#usageCPUProcess").data("title")
+            , html: true});
+
+        $("#memoryAvailableProcess").tooltip({placement: 'left',
+            title: $("#memoryAvailableProcess").data("title")
+            , html: true});
+
+        $("#memoryUsageProcess").tooltip({placement: 'left',
+            title: $("#memoryUsageProcess").data("title")
+            , html: true});
+
+        $("#dataInputStream").tooltip({placement: 'left',
+            title: $("#dataInputStream").data("title")
+            , html: true});
+
+        $("#dataOutputStream").tooltip({placement: 'left',
+            title: $("#dataOutputStream").data("title")
+            , html: true});
+
+
+         $('[data-toggle="tooltip"]').tooltip();
+    })
+
+</script>
+</body>
+</html>

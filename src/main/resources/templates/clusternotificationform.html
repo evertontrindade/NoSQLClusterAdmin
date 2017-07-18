@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <link th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" rel="stylesheet" />
+
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+
+<div class="container">
+
+    <div>
+        <form class="form-horizontal" th:object="${cluster}" th:action="@{'/cluster/notification/'}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" id="users" th:field="*{usersAdded}"/>
+
+            <h2 class="text-center" th:text="${cluster.nameFormatted}"> </h2>
+            <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{clusternotificationform.title}"> </h3>
+
+            <div id="alert"></div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{clusternotificationform.mail.to}">mail.to</label>
+                <div class="col-sm-6">
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{mailTo}" id="mailTo"
+                           data-toggle="tooltip" data-placement="bottom"
+                           th:title="#{clusternotificationform.mail.to.tooltip}"/>
+                </div>
+                <div class="col-sm-3">
+                    <a href="#" id="btnMailTo" class="btn btn-default" role="button" th:text="#{clusternotificationform.test}">test</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="panel panel-primary" data-toggle="tooltip" data-placement="top" th:title="#{clusternotificationform.usersavailable.message}">
+                            <div class="panel-heading" th:text="#{clusternotificationform.users.available}"></div>
+                            <div class="panel-body">
+                                <ul class="list-group" id="users-available" style="height:300px;overflow-y:scroll;width:100%;">
+                                    <li th:id="${item.id}" th:text="${#strings.toUpperCase(item.name)}" th:attr="data-email=${item.email}, data-id=${item.id}" class="list-group-item" th:each="item : ${usersAvailable}"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="panel panel-primary" data-toggle="tooltip" data-placement="top" th:title="#{clusternotificationform.usersadded.message}">
+                            <div class="panel-heading" th:text="#{clusternotificationform.users.added}"></div>
+                            <div class="panel-body">
+                                <ul class="list-group" id="users-added" style="height:300px;overflow-y:scroll;width:100%;">
+                                <li th:id="${item.id}" th:text="${#strings.toUpperCase(item.name)}" th:attr="data-email=${item.email}, data-id=${item.id}" class="list-group-item" th:each="item : ${cluster.usersMail}"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{clusternotificationform.alert.activity}"></label>
+                <div class="col-sm-3">
+                    <select th:field="*{alertActivity}" id="alertActivity" class="form-control" required="true">
+                        <option value="true" th:text="#{message.yes}">yes</option>
+                        <option value="false" th:text="#{message.no}">no</option>
+                    </select>
+                </div>
+
+                <label class="col-sm-3 control-label" th:text="#{clusternotificationform.alert.cpu}"></label>
+                <div class="col-sm-3">
+                    <select th:field="*{alertCpu}" id="alertCpu" class="form-control" required="true">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        <option value="50">50</option>
+                        <option value="60">60</option>
+                        <option value="70">70</option>
+                        <option value="80">80</option>
+                        <option value="90">90</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{clusternotificationform.alert.memory}"></label>
+                <div class="col-sm-3">
+                    <select th:field="*{alertMemory}" id="alertMemory" class="form-control" required="true">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        <option value="50">50</option>
+                        <option value="60">60</option>
+                        <option value="70">70</option>
+                        <option value="80">80</option>
+                        <option value="90">90</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <label class="col-sm-3 control-label" th:text="#{clusternotificationform.alert.disk}"></label>
+                <div class="col-sm-3">
+                    <select th:field="*{alertDisk}" id="alertDisk" class="form-control" required="true">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        <option value="50">50</option>
+                        <option value="60">60</option>
+                        <option value="70">70</option>
+                        <option value="80">80</option>
+                        <option value="90">90</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="row text-center" style="margin-bottom: 30px;">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}"></button>
+                <a href="#" th:href="@{/clusters}" class="btn btn-default" role="button" th:text="#{button.cancel}"></a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+<script>
+
+    $( document ).ready(function() {
+        $('#btnMailTo').click(function() {
+            if ($('#mailTo').val() != '') {
+                url = '/cluster/testmail/' + $('#mailTo').val().replace(/\./g,'_');
+                console.log(url);
+                $("#alert").load(url);
+            }
+        });
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        $("#users-available").sortable({
+            cursor: "move",
+            connectWith : ".list-group",
+            placeholder: "place",
+            start: function (event, ui) {
+                ui.item.toggleClass("highlight");
+            },
+            stop: function (event, ui) {
+                ui.item.toggleClass("highlight");
+            }
+        });
+        $("#users-added").sortable({
+            cursor: "move",
+            connectWith : ".list-group",
+            placeholder: "place",
+            start: function (event, ui) {
+                ui.item.toggleClass("highlight");
+            },
+            stop: function (event, ui) {
+                ui.item.toggleClass("highlight");
+            },
+            receive: function(event, ui) {
+                var str = $("#mailTo").val();
+                var arrMail = [];
+                if (str) {
+                    arrMail = str.split(',');
+                }
+                arrMail.push(ui.item.attr("data-email"));
+                console.log(arrMail);
+                $("#mailTo").val(arrMail);
+
+
+                var str = $("#users").val();
+                var arr = [];
+                if (str) {
+                    arr = str.split(',');
+                }
+                arr.push(ui.item.attr("data-id"));
+                console.log(arr);
+                $("#users").val(arr);
+
+            },
+            remove: function(event, ui) {
+                var str = $("#mailTo").val();
+                var arr = [];
+                if (str) {
+                    arr = str.split(',');
+                }
+                arr = $.grep(arr, function(item) {
+                    return item != ui.item.attr("data-email");
+                });
+
+                $("#mailTo").val(arr);
+
+                var str = $("#users").val();
+                var arr = [];
+                if (str) {
+                    arr = str.split(',');
+                }
+                arr = $.grep(arr, function(item) {
+                    return item != ui.item.attr("data-id");
+                });
+
+                $("#users").val(arr);
+
+
+            }
+        });
+        $( "#roles-available, #roles-added" ).disableSelection();
+    })
+</script>
+</body>
+</html>

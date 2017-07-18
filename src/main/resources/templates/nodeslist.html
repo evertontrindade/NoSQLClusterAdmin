@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+
+    <link th:href="@{/webjars/c3/0.4.11/c3.min.css}" rel="stylesheet" media="screen" />
+    <script th:src="@{/webjars/d3js/3.5.5/d3.min.js}"></script>
+    <script th:src="@{/webjars/c3/0.4.11/c3.min.js}"></script>
+
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${cluster.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{nodelist.title}"> </h3>
+
+    <div>
+        <h4 th:if="${#lists.isEmpty(cluster.nodes)}" class="text-center" th:text="#{nodelist.nodata}"></h4>
+        <table class="table table-hover" th:if="${not #lists.isEmpty(cluster.nodes)}">
+            <tr>
+                <th th:text="#{nodelist.order}"></th>
+                <th th:text="#{nodelist.active}"></th>
+                <th th:text="#{nodelist.name}"></th>
+                <th th:text="#{nodelist.location}"></th>
+                <th th:text="#{nodelist.ip}"></th>
+                <th th:text="#{nodelist.connection}"></th>
+                <th th:text="#{nodelist.port}"></th>
+                <th th:text="#{nodelist.action}"></th>
+            </tr>
+
+            <tr th:each="node : ${cluster.nodes}"
+                th:style="${node.status.name() eq 'OK'}? 'background-color: lightgreen':''" >
+                <td th:text="${node.executionOrder}"></td>
+                <td th:if="${node.active}" class="text-center"><i class="fa fa-check-square fa-2x" aria-hidden="true"></i></td>
+                <td th:if="${not node.active}" class="text-center"><i class="fa fa-exclamation-triangle fa-2x" aria-hidden="true"></i></td>
+                <td th:text="${node.name}"></td>
+                <td th:text="${node.type}" class="text-center"></td>
+                <td th:text="${node.hostFormatted}" class="text-center"></td>
+                <td th:text="${node.connectionTypeFormatted}" class="text-center"></td>
+                <td th:text="${node.portFormatted}" class="text-center"></td>
+                <td>
+                    <div class="dropdown text-center">
+                        <a href="#"
+                           th:if="${@currentUserService.canAccessUser(currentUser, 'UPDATE_NODE') }"
+                           th:href="${'/node/edit/' + node.id}" class="btn btn-default" role="button"><i class="fa fa-pencil-square" aria-hidden="true" th:title="#{nodelist.edit( ${#strings.toUpperCase(node.name)} )}"></i></a>
+                        <a href="#"
+                           th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_FILEDIR', 'LIST_FILEDIR') }"
+                           th:href="${'/fileDirectories/'+ node.id}" class="btn btn-default" role="button"><i class="fa fa-folder-open-o" aria-hidden="true" th:title="#{nodelist.directories( ${#strings.toUpperCase(node.name)} )}"></i></a>
+                        <a href="#"
+                           th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_CONFFILE', 'LIST_CONFFILE') }"
+                           th:href="${'/confFiles/'+ node.id}" class="btn btn-default" role="button"><i class="fa fa-files-o" aria-hidden="true" th:title="#{nodelist.configurations( ${#strings.toUpperCase(node.name)} )}"></i></a>
+                        <a href="#"
+                           th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_EXECFILE', 'LIST_EXECFILE') }"
+                           th:href="${'/execFiles/'+ node.id}" class="btn btn-default" role="button"><i class="fa fa-rocket" aria-hidden="true" th:title="#{nodelist.manageservices( ${#strings.toUpperCase(node.name)} )}"></i></a>
+                        <a href="#"
+                           th:if="${@currentUserService.canAccessUser(currentUser, 'CLONE_NODE') }"
+                           data-toggle="dropdown" class="btn btn-default" role="button" id="more"><i class="fa fa-ellipsis-v" aria-hidden="true" th:title="#{nodelist.more}"></i></a>
+                        <ul class="dropdown-menu col-md-8">
+                            <a href="#"
+                               th:if="${@currentUserService.canAccessUser(currentUser, 'CLONE_NODE', 'MONITOR_NODE', 'SERVICE_NODE', 'DELETE_NODE') }"
+                               style="margin: 3px;"
+                                   th:href="${'/node/clone/'+ node.id}"
+                                   class="btn btn-default" role="button">
+                                <i class="fa fa-clipboard" aria-hidden="true" th:title="#{nodelist.clone( ${#strings.toUpperCase(node.name)} )}"></i>
+                            </a>
+
+                            <a href="#" th:if="${cluster.enableMonitoring} and ${@currentUserService.canAccessUser(currentUser, 'MONITOR_NODE') }"
+                               style="margin: 3px;"
+                               data-toggle="modal"
+                               th:attr="data-target='#monitormachine_'+${node.id},data-id=${node.id}"
+                               class="btn btn btn-default btn-execute" role="button">
+                                <i class="fa fa-bar-chart"
+                                   aria-hidden="true"
+                                   th:title="#{nodelist.monitormachine( ${#strings.toUpperCase(node.name)} )}">
+                                </i>
+                            </a>
+
+                            <a href="#" th:if="${cluster.enableMonitoring} and ${@currentUserService.canAccessUser(currentUser, 'MONITOR_NODE') }"
+                               style="margin: 3px;"
+                               data-toggle="modal"
+                               th:attr="data-target='#monitorprocess_'+${node.id},data-id=${node.id}"
+                               class="btn btn btn-default btn-execute" role="button">
+                                <i class="fa fa-pie-chart"
+                                   aria-hidden="true"
+                                   th:title="#{nodelist.monitorprocess( ${#strings.toUpperCase(node.name)} )}">
+                                </i>
+                            </a>
+                            <a href="#" th:if="${cluster.enableMonitoring} and ${@currentUserService.canAccessUser(currentUser, 'MONITOR_NODE') }"
+                               style="margin: 3px;"
+                               data-toggle="modal"
+                               th:attr="data-target='#monitortotals_'+${node.id},data-id=${node.id}"
+                               class="btn btn btn-default btn-execute" role="button">
+                                <i class="fa fa-cubes"
+                                   aria-hidden="true"
+                                   th:title="#{nodelist.monitortotals( ${#strings.toUpperCase(node.name)} )}">
+                                </i>
+                            </a>
+
+                            <a href="#"
+                               th:if="${@currentUserService.canAccessUser(currentUser, 'SERVICE_NODE') }"
+                               style="margin: 3px;"
+                               data-toggle="modal"
+                               th:attr="data-target='#executionmodal_'+${node.id}" class="btn btn btn-default" role="button">
+	                               <i class="fa fa-cogs" aria-hidden="true" 
+	                               th:title="#{nodelist.services( ${#strings.toUpperCase(node.name)} )}">
+	                               </i>
+	                        </a>
+                            <a href="#"
+                               th:if="${@currentUserService.canAccessUser(currentUser, 'DELETE_NODE') }"
+                               style="margin: 3px;"
+                               data-toggle="modal"
+                               th:attr="data-target='#modal_'+${node.id}" class="btn btn-danger" role="button">
+                               		<i class="fa fa-trash" aria-hidden="true"
+                               		   th:title="#{nodelist.delete}">
+                               </i></a>
+                        </ul>
+
+                    </div>
+                </td>
+
+                <div class="modal fade askModal" tabindex="-1" role="dialog" th:id="${'modal_' + node.id}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title" th:text="#{message.warn}" style="font-weight: bolder;"></h2>
+                            </div>
+                            <div class="modal-body">
+                                <p th:text="#{nodelist.delete.message}"></p>
+
+                                <p th:text="#{message.confirm}" style="font-weight: bolder;"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-default" role="button" data-dismiss="modal" th:text="#{message.no}">Não</a>
+                                <a href="#" th:href="${'/node/delete/' + node.id}" class="btn btn-primary" role="button" th:text="#{message.yes}">Sim</a>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+
+
+                <!--/*/ <th:block th:include="fragments/node/executionmodal :: executionmodal"></th:block> /*/-->
+                <!--/*/ <th:block th:include="fragments/node/monitormachinemodal :: monitor"></th:block> /*/-->
+                <!--/*/ <th:block th:include="fragments/node/monitorprocessmodal :: monitor"></th:block> /*/-->
+                <!--/*/ <th:block th:include="fragments/node/monitortotalsmodal :: monitor"></th:block> /*/-->
+
+            </tr>
+        </table>
+        <div class="row">
+            <a href="#"
+               th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_NODE') }"
+               th:href="${'/node/new/' + cluster.id}" class="btn btn-primary" role="button" data-toggle="tooltip" data-placement="left" th:title="#{nodelist.new.message}"><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp; <span th:text="#{nodelist.new}"></span></a>
+            <a href="#" th:href="@{/clusters}" class="btn btn-primary" role="button" style="margin-left: 10px;"><i class="fa fa-th-list" aria-hidden="true"></i>&nbsp; <span th:text="#{button.back}"></span></a>
+        </div>
+
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script src="/js/sockjs-0.3.4.js"></script>
+<script src="/js/stomp.js"></script>
+
+<script>
+
+    $( ".mod" ).click(function( event ) {
+        event.preventDefault();
+        console.log("event.preventDefault();")
+
+        $.ajax({
+            url : $(this).attr("href"),
+            type: 'GET'
+        });
+
+        return false;
+    });
+
+    $( document ).ready(function() {
+
+        var id = null;
+        var stompClientExecution = null;
+        var cpuNodeChart = null;
+        var cpuProcessChart = null;
+        var memoryNodeChart = null;
+        var memoryProcessChart = null;
+        var diskNodeChart = null;
+        var ioInProcessChart = null;
+        var ioOutProcessChart = null;
+
+        var urlCpuNode = '/chart/cpunode/node/';
+        var urlCpuProcess = '/chart/cpuprocess/node/';
+        var urlMemoryNode = '/chart/memorynode/node/';
+        var urlMemoryProcess = '/chart/memoryprocess/node/';
+        var urlDiskNode = '/chart/disknode/node/';
+        var urlIoInProcess = '/chart/ioinnode/node/';
+        var urlIoOutProcess = '/chart/iooutnode/node/';
+        var urlLightChart = '/chart/lights/node/';
+        var urlTotals = '/chart/total/node/';
+
+
+
+        $( ".btn-execute" ).click(function() {
+            id=$(this).data('id');
+
+            urlCpuNode = '/chart/cpunode/node/';
+            urlCpuProcess = '/chart/cpuprocess/node/';
+            urlMemoryNode = '/chart/memorynode/node/';
+            urlMemoryProcess = '/chart/memoryprocess/node/';
+            urlDiskNode = '/chart/disknode/node/';
+            urlIoInProcess = '/chart/ioinnode/node/';
+            urlIoOutProcess = '/chart/iooutnode/node/';
+            urlLightChart = '/chart/lights/node/';
+            urlTotals = '/chart/total/node/';
+
+
+            urlCpuNode += id;
+            urlCpuProcess += id;
+            urlMemoryNode += id;
+            urlMemoryProcess += id;
+            urlDiskNode += id;
+            urlIoInProcess += id;
+            urlIoOutProcess += id;
+            urlLightChart += id;
+            urlTotals += id;
+        });
+
+        function connectExecution() {
+            var socket = new SockJS('/connect-socket');
+            stompClientExecution = Stomp.over(socket);
+            stompClientExecution.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                stompClientExecution.subscribe('/topic/exec', function(messenger){
+                    console.log(messenger);
+                    json = JSON.parse(messenger.body);
+                    show(json.type, json.content, json.clean);
+                });
+            });
+        }
+
+        function disconnectExecution() {
+            if (stompClientExecution != null) {
+                stompClientExecution.disconnect();
+            }
+            console.log("Disconnected");
+        }
+
+        function connectMonitorMachine() {
+            generateChartsMachine();
+            updateChartsMachine();
+        }
+
+        function connectMonitorProcess() {
+            generateChartsProcess();
+            updateChartsProcess();
+        }
+
+        function connectMonitorTotals() {
+            console.log('connect-totals');
+            generateChartLight();
+            updateLight();
+            generateTotals();
+            updateTotals();
+        }
+
+        function show(type, message, cleanDiv) {
+            console.log("type: " + type + " - " + message);
+
+            var response = document.getElementById('execution');
+
+            if (cleanDiv) {
+                $("#execution").empty();
+            } else {
+                var p = document.createElement('label');
+                p.style.fontFamily = 'monospace';
+                p.style.fontSize = '11px';
+                p.style.margin = '0';
+                if (type == "DEBUG") {
+                    p.style.color = '#000';
+                }else if (type == "INFO") {
+                    p.style.color = '#00008B';
+                } else if (type == "ERROR") {
+                    p.style.color = '#FF0000';
+                } else if (type == "FATAL") {
+                    p.style.color = '#DC143C';
+                } else if (type == "EXEC") {
+                    p.style.color = '#228B22';
+                } else {
+                    p.style.color = '#FF4500';
+                }
+
+                p.appendChild(document.createTextNode(message));
+                response.appendChild(p);
+                var br = document.createElement("br");
+                response.appendChild(br)
+            }
+
+        }
+
+        function generateChartLight() {
+            $.getJSON(urlLightChart, function(data) {
+                var items = [];
+                $.each(data, function (key, val) {
+
+                    var span = document.createElement('span');
+                    span.textContent = key.toUpperCase();
+
+                    var img = document.createElement('img');
+                    img.src = "/img/"+ ((val) ? "green" : "red") +".png";
+
+                    var thumb = document.createElement('div');
+                    thumb.className = "thumbnail";
+                    thumb.appendChild(img);
+                    thumb.appendChild(span);
+
+                    var col = document.createElement('div');
+                    col.className = "col-md-2 text-center";
+                    col.appendChild(thumb);
+
+                    items.push(col);
+                });
+
+                $( "#light-node_" + id ).empty();
+
+                var node = document.getElementById("light-node_" + id );
+                items.forEach(function(item) {
+                    node.appendChild(item);
+                })
+
+
+            });
+        }
+
+
+        function generateChartsMachine() {
+
+            cpuNodeChart = c3.generate({
+                bindto: '#cpu-node_'+id,
+                data: {
+                    url: urlCpuNode,
+                    mimeType: 'json',
+                    type: 'area',
+                    x: 'executionTime',
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: '%',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+            memoryNodeChart = c3.generate({
+                bindto: '#memory-node_'+id,
+                data: {
+                    url: urlMemoryNode,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'line',
+                    names: {
+                        available: 'Disponível',
+                        usage: 'Utilizado'
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: 'MB',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+            diskNodeChart = c3.generate({
+                bindto: '#disk-node_'+id,
+                data: {
+                    url: urlDiskNode,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'bar',
+                    groups: [
+                        ['available', 'usage']
+                    ],
+                    names: {
+                        available: 'Disponível',
+                        usage: 'Utilizado'
+                    }
+                },
+                bar: {
+                    width: {
+                        ratio: 0.3
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: 'GB',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+        }
+
+        function generateChartsProcess() {
+
+            cpuProcessChart = c3.generate({
+                bindto: '#cpu-process_'+id,
+                data: {
+                    url: urlCpuProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'area',
+                    names: {
+                        usage: 'Utilizado'
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: '%',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+            memoryProcessChart = c3.generate({
+                bindto: '#memory-process_'+id,
+                data: {
+                    url: urlMemoryProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'line',
+                    names: {
+                        available: 'Disponível',
+                        usage: 'Utilizado'
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: 'MB',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+            ioInProcessChart = c3.generate({
+                bindto: '#io-in-process_'+id,
+                data: {
+                    url: urlIoInProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'line',
+                    names: {
+                        usage: 'Utilizado'
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M',
+                            fit: 'true'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: 'kbps',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+            ioOutProcessChart = c3.generate({
+                bindto: '#io-out-process_'+id,
+                data: {
+                    url: urlIoOutProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    type: 'line',
+                    names: {
+                        usage: 'Utilizado'
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%H:%M'
+                        }
+                    },
+                    y: {
+                        label: {
+                            text: 'kbps',
+                            position: 'outer-top'
+                        }
+                    }
+                },
+                size: {
+                    height: 150
+                }
+            });
+
+        }
+
+        var updaterLight = null;
+        function updateLight() {
+            updaterLight = setTimeout(function () {
+                generateChartLight();
+                updateLight();
+            }, 5000);
+        }
+
+        function generateTotals() {
+            $.getJSON(urlTotals, function(data) {
+                $.each(data, function (key, val) {
+                    $("#"+key + "_"+id).text(val);
+                });
+            });
+        }
+
+        var updaterTotals = null;
+        function updateTotals() {
+            updaterTotals = setTimeout(function () {
+                generateTotals();
+                updateTotals();
+            }, 5000);
+        }
+
+        var updater = null;
+        function updateChartsMachine() {
+            updater = setTimeout(function () {
+                cpuNodeChart.load({
+                    url: urlCpuNode,
+                    mimeType: 'json',
+                    x : 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+                memoryNodeChart.load({
+                    url: urlMemoryNode,
+                    mimeType: 'json',
+                    x : 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+                diskNodeChart.load({
+                    url: urlDiskNode,
+                    mimeType: 'json',
+                    x : 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+
+                updateChartsMachine();
+            }, 60000);
+
+        }
+
+        function updateChartsProcess() {
+            updater = setTimeout(function () {
+                cpuProcessChart.load({
+                    url: urlCpuProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+
+                memoryProcessChart.load({
+                    url: urlMemoryProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+
+                ioInProcessChart.load({
+                    url: urlIoInProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+                ioOutProcessChart.load({
+                    url: urlIoOutProcess,
+                    mimeType: 'json',
+                    x: 'executionTime',
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%H:%M'
+                            }
+                        }
+                    }
+                });
+
+                updateChartsProcess();
+            }, 60000);
+        }
+
+        $(".execution").on('shown.bs.modal', function() {
+            connectExecution();
+        });
+
+        $(".execution").on('hidden.bs.modal .execution', function() {
+            $("#execution").empty();
+            disconnectExecution();
+            window.location.reload();
+        });
+
+
+        $(".monitormachine").on('shown.bs.modal', function() {
+            connectMonitorMachine();
+        });
+        $(".monitorprocess").on('shown.bs.modal', function() {
+            connectMonitorProcess();
+        });
+        $(".monitortotals").on('shown.bs.modal', function() {
+            connectMonitorTotals();
+        });
+
+        $(".monitormachine").on('hidden.bs.modal', function() {
+            clearTimeout(updater);
+            clearTimeout(updaterLight);
+            clearTimeout(updaterTotals);
+            id = null;
+
+            urlCpuNode = '/chart/cpunode/node/';
+            urlMemoryNode = '/chart/memorynode/node/';
+            urlDiskNode = '/chart/disknode/node/';
+        });
+
+        $(".monitorprocess").on('hidden.bs.modal', function() {
+            clearTimeout(updater);
+            clearTimeout(updaterLight);
+            clearTimeout(updaterTotals);
+
+            id = null;
+            urlCpuProcess = '/chart/cpuprocess/node/';
+            urlMemoryProcess = '/chart/memoryprocess/node/';
+            urlIoInProcess = '/chart/ioinnode/node/';
+            urlIoOutProcess = '/chart/iooutnode/node/';
+        });
+
+        $(".monitortotals").on('hidden.bs.modal', function() {
+            clearTimeout(updater);
+            clearTimeout(updaterLight);
+            clearTimeout(updaterTotals);
+
+            id = null;
+            urlLightChart = '/chart/lights/node/';
+            urlTotals = '/chart/total/node/';
+        });
+
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+
+</script>
+
+</body>
+</html>

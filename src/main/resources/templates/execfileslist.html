@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+    <h2 class="text-center" th:text="${node.nameFormatted}"> </h2>
+    <h3 class="text-center" style="padding-bottom: 30px;" th:text="#{execfilelist.title}"> </h3>
+    <div>
+        <h4 th:if="${#lists.isEmpty(node.execFiles)}" class="text-center" th:text="#{execfilelist.nodata}"></h4>
+        <table class="table table-hover" th:if="${not #lists.isEmpty(node.execFiles)}">
+            <tr>
+                <th th:text="#{execfilelist.order}"></th>
+                <th th:text="#{execfilelist.path}"></th>
+                <th th:text="#{execfilelist.type}"></th>
+                <th th:text="#{execfilelist.action}"></th>
+            </tr>
+
+            <tr th:each="file : ${node.execFiles}">
+                <td th:text="${file.executionOrder}"></td>
+                <td th:if="${ #strings.length(file.path) gt 100}" th:utext="${ #strings.substring(file.path, 0, 97) + '...'}" th:title="${file.path}"></td>
+                <td th:if="${ #strings.length(file.path) le 100}" th:utext="${file.path}"></td>
+                <td th:if="${file.type.name() eq 'START'}" th:text="#{execfilelist.start}"></td>
+                <td th:if="${file.type.name() eq 'RESTART'}" th:text="#{execfilelist.restart}"></td>
+                <td th:if="${file.type.name() eq 'STOP'}" th:text="#{execfilelist.stop}"></td>
+                <td th:if="${file.type.name() eq 'DELETE'}" th:text="#{execfilelist.drop}"></td>
+                <td th:if="${file.type.name() eq 'CUSTOM'}" th:utext="${#strings.toUpperCase(file.name)}"></td>
+                <td>
+                    <a href="#" data-toggle="modal"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'SERVICE_EXECFILE') }"
+                       th:attr="data-target='#executionmodal',data-id=${'/execFile/execute/' + file.id}"
+                       class="btn btn-default btn-execute-service" role="button">
+                         <i class="fa fa-play-circle-o" aria-hidden="true" th:title="#{execfilelist.execute}"></i>
+                    </a>
+                    <a href="#"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'UPDATE_EXECFILE') }"
+                       th:href="${'/execFile/edit/' + file.id}" class="btn btn-default" role="button"><i class="fa fa-pencil-square" aria-hidden="true" th:title="#{execfilelist.edit}"></i></a>
+                    <a href="#"
+                       th:if="${@currentUserService.canAccessUser(currentUser, 'DELETE_EXECFILE') }"
+                       data-toggle="modal" th:attr="data-target='#modal_'+${file.id}" class="btn btn-default" role="button"><i class="fa fa-trash" aria-hidden="true" th:title="#{execfilelist.delete}"></i></a>
+                </td>
+                <div class="modal fade askModal" tabindex="-1" role="dialog" th:id="${'modal_' + file.id}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title" th:text="#{message.warn}" style="font-weight: bolder;"></h2>
+                            </div>
+                            <div class="modal-body">
+                                <p th:text="#{message.confirm}" style="font-weight: bolder;"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-default" role="button" data-dismiss="modal" th:text="#{message.no}"></a>
+                                <a href="#" th:href="${'/execFile/delete/' + file.id}" class="btn btn-primary" role="button" th:text="#{message.yes}"></a>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+            </tr>
+        </table>
+        <div class="row">
+            <a href="#"
+               th:if="${@currentUserService.canAccessUser(currentUser, 'INSERT_EXECFILE') }"
+               th:href="${'/execFile/new/' + node.id}" class="btn btn-primary" role="button"><i class="fa fa-plus-square" aria-hidden="true"></i>&nbsp; <span th:text="#{execfilelist.new}"></span></a>
+            <a href="#" th:href="${'/nodes/' + node.cluster.id}" class="btn btn-primary" role="button"><i class="fa fa-th-list" aria-hidden="true"></i>&nbsp; <span th:text="#{button.back}"></span></a>
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" th:id="${'executionmodal'}" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="width: 80% !important;">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h2 class="text-center" th:text="${node.nameFormatted}"> </h2>
+                        <h4 th:text="#{execfilelist.modal.title}" class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="row" style="padding: 30px;">
+                                <div class="col-sm-12" style="padding: 5px;border-style: solid;border: 1px; background-color: lightgray; height: 250px !important;overflow: scroll;overflow-x: hidden;" align="left">
+                                    <p id="execution"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{button.close}"></button>
+                    </div>
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+
+<script src="/js/sockjs-0.3.4.js"></script>
+<script src="/js/stomp.js"></script>
+
+<script>
+
+    $( document ).ready(function() {
+
+        var url = null;
+        var stompClient = null;
+
+        $( ".btn-execute-service" ).click(function() {
+            url = $(this).data('id');
+            console.log('url ' + url);
+        });
+
+        function connect() {
+            var socket = new SockJS('/connect-socket');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/exec', function(messenger){
+                    json = JSON.parse(messenger.body);
+                    show(json.type, json.content, json.clean);
+                });
+                console.log('send request to ' + url);
+                $.ajax({
+                    url : url,
+                    type: 'GET'
+                });
+                console.log('request sent... ');
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+        }
+
+        function show(type, message, cleanDiv) {
+            console.log("type: " + type + " - " + message);
+
+            var response = document.getElementById('execution');
+
+            if (cleanDiv) {
+                $("#execution").empty();
+            } else {
+                var p = document.createElement('label');
+                p.style.fontFamily = 'monospace';
+                p.style.fontSize = '11px';
+                p.style.margin = '0';
+                if (type == "DEBUG") {
+                    p.style.color = '#000';
+                }else if (type == "INFO") {
+                    p.style.color = '#00008B';
+                } else if (type == "ERROR") {
+                    p.style.color = '#FF0000';
+                } else if (type == "FATAL") {
+                    p.style.color = '#DC143C';
+                } else if (type == "EXEC") {
+                    p.style.color = '#228B22';
+                } else {
+                    p.style.color = '#FF4500';
+                }
+
+                p.appendChild(document.createTextNode(message));
+                response.appendChild(p);
+                var br = document.createElement("br");
+                response.appendChild(br)
+
+                console.log(response);
+            }
+
+        }
+
+        $(window).on('shown.bs.modal', function() {
+            connect();
+        });
+        $(window).on('hidden.bs.modal', function() {
+            $("#execution").empty();
+            disconnect();
+        });
+    });
+</script>
+
+</body>
+</html>

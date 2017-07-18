@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title th:text="#{app.title}"></title>
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+
+<div class="container">
+
+    <div>
+        <form class="form-horizontal" th:object="${cluster}" th:action="@{/cluster}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{pathScriptMonitor}" />
+
+            <h2 class="text-center" th:if="${cluster.id gt 0}" th:text="${cluster.nameFormatted}"> </h2>
+            <h3 th:if="${cluster.id gt 0}" style="padding-bottom: 30px;"  th:text="#{clusterform.edit.title}" class="text-center" ></h3>
+            <h3 th:if="${cluster.id le 0 || cluster.id eq null}" style="padding-bottom: 30px;" th:text="#{clusterform.new.title}" class="text-center" ></h3>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" th:text="#{clusterform.name}">name</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" th:field="*{name}" required="true" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox col-sm-offset-3">
+                    <label class="control-label">
+                        <input type="checkbox" th:field="*{executeCustom}" th:text="#{clusterform.execute}" />
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox col-sm-offset-3">
+                    <label class="control-label">
+                        <input type="checkbox" th:field="*{enableMonitoring}" id="enableMonitoring" th:text="#{clusterform.monitoring}" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="row text-center" style="margin-bottom: 30px;">
+                <button type="submit" class="btn btn-default" th:text="#{button.confirm}">confirm</button>
+                <a href="#" th:href="@{/clusters}" class="btn btn-default" role="button" th:text="#{button.cancel}">cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+    <!--/*/ <th:block th:include="fragments/footer :: footer"></th:block> /*/-->
+</body>
+</html>

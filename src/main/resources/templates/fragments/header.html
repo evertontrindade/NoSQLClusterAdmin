@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+</head>
+<body>
+<div th:fragment="header">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li th:if="${currentUser == null }">
+                        <a th:href="@{/login}" role="button" aria-haspopup="true" aria-expanded="false">Efetuar Login</a>
+                    </li>
+                    <li class="dropdown" th:if="${currentUser != null }">
+                        <a th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_CLUSTER', 'LIST_CLUSTER','MONITOR_CLUSTER') }"
+                           href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false" ><span th:text="#{menu.cluster.title}">cluster.title</span> <span class="caret"></span></a>
+
+                        <ul class="dropdown-menu">
+	                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_CLUSTER') }"><a href="#" th:href="@{/cluster/new}" th:text="#{menu.new}">cluster.new</a></li>
+                            <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_CLUSTER', 'LIST_CLUSTER', 'MONITOR_CLUSTER') }"><a href="#" th:href="@{/clusters}" th:text="#{menu.list}">cluster.list</a></li>
+                        </ul>
+                    </li>
+
+                    <li th:if="${currentUser != null }" class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span th:text="#{menu.user.title}">cluster.title</span> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li th:if="${ currentUser != null }"><a th:href="${'/user/my-profile'}" th:text="#{menu.profile}">profile</a></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_USER', 'LIST_USER') }" role="separator" class="divider"></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_USER') }"><a href="/user/new" th:text="#{menu.user.new}">user.new</a></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'LIST_USER') }"><a href="/users" th:text="#{menu.user.list}">user.list</a></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_PROFILE', 'LIST_PROFILE') }" role="separator" class="divider"></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'INSERT_PROFILE') }"><a href="/profile/new" th:text="#{menu.group.new}">group.new</a></li>
+                        <li th:if="${ @currentUserService.canAccessUser(currentUser, 'LIST_PROFILE') }"><a href="/profiles" th:text="#{menu.group.list}">group.list</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li th:if="${ currentUser != null }"><a href="/logout" th:text="#{menu.logout}">menu.logout</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+</div>
+
+</body>
+</html>
